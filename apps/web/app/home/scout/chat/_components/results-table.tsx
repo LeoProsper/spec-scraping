@@ -168,17 +168,27 @@ function CompanyItem({ place }: { place: Place }) {
 
             {/* B) AVALIAÇÃO + CNPJ */}
             <div className="flex items-center gap-3 shrink-0">
-              {/* Avaliação */}
-              <div className="flex items-center gap-1.5 text-xs">
-                <Star className="h-3.5 w-3.5 fill-yellow-400 text-yellow-400 shrink-0" />
-                <span className="font-medium text-foreground whitespace-nowrap">
-                  {place.rating ? place.rating.toFixed(1) : '--'}
+              {/* Avaliação - SEMPRE EXIBIR */}
+              <div className="flex items-center gap-1.5">
+                <Star className={`h-4 w-4 shrink-0 ${
+                  place.rating !== undefined && place.rating !== null && place.rating > 0
+                    ? 'fill-yellow-400 text-yellow-400'
+                    : 'text-muted-foreground/40'
+                }`} />
+                <span className={`font-semibold text-sm whitespace-nowrap ${
+                  place.rating !== undefined && place.rating !== null && place.rating > 0
+                    ? 'text-foreground'
+                    : 'text-muted-foreground'
+                }`}>
+                  {place.rating !== undefined && place.rating !== null && place.rating > 0
+                    ? place.rating.toFixed(1)
+                    : 'N/A'}
                 </span>
-                {place.reviews_count ? (
-                  <span className="text-muted-foreground whitespace-nowrap">
-                    ({place.reviews_count})
+                {place.reviews_count !== undefined && place.reviews_count !== null && place.reviews_count > 0 && (
+                  <span className="text-xs text-muted-foreground whitespace-nowrap">
+                    ({place.reviews_count.toLocaleString('pt-BR')})
                   </span>
-                ) : null}
+                )}
               </div>
 
               {/* CNPJ */}
@@ -834,16 +844,23 @@ function CompanyItem({ place }: { place: Place }) {
 
 export function ResultsTable({ results, onNewSearch }: ResultsTableProps) {
   console.log('🎨 ResultsTable renderizada com', results.length, 'resultados');
-  if (results[0]) {
-    console.log('📋 Dados do primeiro resultado:', {
-      name: results[0].name,
-      rating: results[0].rating,
-      rating_type: typeof results[0].rating,
-      reviews_count: results[0].reviews_count,
-      reviews_type: typeof results[0].reviews_count,
-      cnpj: results[0].cnpj
+  
+  // Log detalhado de TODOS os resultados
+  results.forEach((place, index) => {
+    console.log(`📊 Resultado ${index + 1}/${results.length}:`, {
+      name: place.name,
+      rating: place.rating,
+      rating_exists: place.rating !== undefined && place.rating !== null,
+      rating_type: typeof place.rating,
+      rating_value: place.rating,
+      reviews_count: place.reviews_count,
+      reviews_exists: place.reviews_count !== undefined && place.reviews_count !== null,
+      reviews_type: typeof place.reviews_count,
+      reviews_value: place.reviews_count,
+      cnpj: place.cnpj,
+      has_all_data: !!(place.rating !== undefined && place.rating !== null && place.reviews_count !== undefined && place.reviews_count !== null)
     });
-  }
+  });
 
   return (
     <div className="w-full">

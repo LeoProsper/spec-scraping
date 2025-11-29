@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { getSupabaseBrowserClient } from '@kit/supabase/client';
+import { getSupabaseBrowserClient } from '@kit/supabase/browser-client';
 import {
   Dialog,
   DialogContent,
@@ -14,7 +14,7 @@ import { Button } from '@kit/ui/button';
 import { Input } from '@kit/ui/input';
 import { Label } from '@kit/ui/label';
 import { Textarea } from '@kit/ui/textarea';
-import { useToast } from '@kit/ui/use-toast';
+import { toast } from '@kit/ui/sonner';
 import { Loader2 } from 'lucide-react';
 import { useListTemplates } from '../_hooks/use-templates';
 import { Badge } from '@kit/ui/badge';
@@ -32,7 +32,6 @@ export function CreateListModal({ open, onOpenChange, mode, onSuccess }: CreateL
   const [descricao, setDescricao] = useState('');
   const [selectedTemplateId, setSelectedTemplateId] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
-  const { toast } = useToast();
   const { templates } = useListTemplates();
   const supabase = getSupabaseBrowserClient();
 
@@ -60,10 +59,7 @@ export function CreateListModal({ open, onOpenChange, mode, onSuccess }: CreateL
 
         if (error) throw error;
 
-        toast({
-          title: 'Lista criada!',
-          description: 'Sua lista foi criada com sucesso.',
-        });
+        toast.success('Lista criada com sucesso!');
 
         onSuccess(data.id);
       } else {
@@ -76,10 +72,7 @@ export function CreateListModal({ open, onOpenChange, mode, onSuccess }: CreateL
 
         if (error) throw error;
 
-        toast({
-          title: 'Lista criada a partir do template!',
-          description: 'Sua lista foi criada com sucesso.',
-        });
+        toast.success('Lista criada a partir do template!');
 
         onSuccess(data);
       }
@@ -89,11 +82,7 @@ export function CreateListModal({ open, onOpenChange, mode, onSuccess }: CreateL
       setDescricao('');
       setSelectedTemplateId(null);
     } catch (error: any) {
-      toast({
-        title: 'Erro ao criar lista',
-        description: error.message,
-        variant: 'destructive',
-      });
+      toast.error(error.message || 'Erro ao criar lista');
     } finally {
       setLoading(false);
     }
@@ -162,29 +151,74 @@ export function CreateListModal({ open, onOpenChange, mode, onSuccess }: CreateL
                 <div className="space-y-2">
                   <Label>Templates Disponíveis</Label>
                   <ScrollArea className="h-[400px] rounded-md border p-4">
-                    <div className="space-y-2">
+                    <div className="space-y-3">
                       {templates.map((template) => (
                         <button
                           key={template.id}
                           type="button"
                           onClick={() => setSelectedTemplateId(template.id)}
-                          className={`w-full text-left p-4 rounded-lg border transition-colors ${
+                          className={`w-full text-left p-4 rounded-lg border-2 transition-all ${
                             selectedTemplateId === template.id
-                              ? 'border-primary bg-primary/5'
-                              : 'border-border hover:border-primary/50'
+                              ? 'border-primary bg-primary/10 shadow-md'
+                              : 'border-border hover:border-primary/50 hover:shadow-sm'
                           }`}
                         >
-                          <div className="flex items-start justify-between gap-2">
-                            <div className="flex-1">
-                              <h4 className="font-medium">{template.nome}</h4>
-                              <p className="text-sm text-muted-foreground mt-1">
-                                {template.descricao}
-                              </p>
+                          <div className="space-y-3">
+                            {/* Header com título e ticket */}
+                            <div className="flex items-start justify-between gap-2">
+                              <div className="flex-1">
+                                <h4 className="font-semibold text-base">{template.nome}</h4>
+                                {template.categoria && (
+                                  <Badge variant="outline" className="mt-1 text-xs">
+                                    {template.categoria}
+                                  </Badge>
+                                )}
+                              </div>
+                              {template.ticket_type && (
+                                <Badge 
+                                  variant={
+                                    template.ticket_type === 'alto' ? 'default' : 
+                                    template.ticket_type === 'medio' ? 'secondary' : 
+                                    'outline'
+                                  }
+                                  className="shrink-0"
+                                >
+                                  {template.ticket_type === 'alto' ? '💰 Alto Ticket' : 
+                                   template.ticket_type === 'medio' ? '💵 Médio Ticket' : 
+                                   '💳 Baixo Ticket'}
+                                </Badge>
+                              )}
                             </div>
-                            {template.categoria && (
-                              <Badge variant="outline" className="shrink-0">
-                                {template.categoria}
-                              </Badge>
+
+                            {/* Descrição comercial */}
+                            <p className="text-sm text-muted-foreground leading-relaxed">
+                              {template.descricao}
+                            </p>
+
+                            {/* Informações comerciais */}
+                            {(template.problema || template.servico_vendavel || template.potencial_medio_cliente) && (
+                              <div className="space-y-2 pt-2 border-t">
+                                {template.problema && (
+                                  <div className="text-xs">
+                                    <span className="font-medium text-destructive">🎯 Problema:</span>{' '}
+                                    <span className="text-muted-foreground">{template.problema}</span>
+                                  </div>
+                                )}
+                                {template.servico_vendavel && (
+                                  <div className="text-xs">
+                                    <span className="font-medium text-primary">✨ Solução:</span>{' '}
+                                    <span className="text-muted-foreground">{template.servico_vendavel}</span>
+                                  </div>
+                                )}
+                                {template.potencial_medio_cliente && (
+                                  <div className="text-xs">
+                                    <span className="font-medium text-green-600">💰 Potencial médio:</span>{' '}
+                                    <span className="text-muted-foreground font-semibold">
+                                      R$ {template.potencial_medio_cliente.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                                    </span>
+                                  </div>
+                                )}
+                              </div>
                             )}
                           </div>
                         </button>

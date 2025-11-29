@@ -12,7 +12,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@kit/ui/select';
-import { useToast } from '@kit/ui/use-toast';
+import { toast } from '@kit/ui/sonner';
 import { Loader2 } from 'lucide-react';
 import { useCompanyInteractions } from '../_hooks/use-interactions';
 
@@ -29,7 +29,6 @@ export function NewInteractionForm({ companyId, onSuccess, onCancel }: NewIntera
   const [resultado, setResultado] = useState('');
   const [nextActionAt, setNextActionAt] = useState('');
   const [loading, setLoading] = useState(false);
-  const { toast } = useToast();
   const { addInteraction } = useCompanyInteractions(companyId);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -46,18 +45,11 @@ export function NewInteractionForm({ companyId, onSuccess, onCancel }: NewIntera
         next_action_at: nextActionAt || undefined,
       });
 
-      toast({
-        title: 'Interação registrada!',
-        description: 'A interação foi salva com sucesso.',
-      });
+      toast.success('Interação registrada com sucesso!');
 
       onSuccess();
     } catch (error: any) {
-      toast({
-        title: 'Erro ao registrar interação',
-        description: error.message,
-        variant: 'destructive',
-      });
+      toast.error(error.message || 'Erro ao registrar interação');
     } finally {
       setLoading(false);
     }

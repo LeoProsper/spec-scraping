@@ -1,4 +1,4 @@
-import { Home, Target, MessageSquare } from 'lucide-react';
+import { Home, Target, MessageSquare, List } from 'lucide-react';
 import { z } from 'zod';
 
 import { NavigationConfigSchema } from '@kit/ui/navigation-schema';
@@ -26,6 +26,11 @@ const routes = [
         label: 'Chat AI',
         path: '/home/scout/chat',
         Icon: <MessageSquare className={iconClasses} />,
+      },
+      {
+        label: 'Listas',
+        path: '/home/lists',
+        Icon: <List className={iconClasses} />,
       },
     ],
   },

@@ -23,6 +23,11 @@ const routes = [
         Icon: <LayoutGrid className={iconClasses} />,
       },
       {
+        label: 'Kaix Scout',
+        path: '/home/scout',
+        Icon: <Target className={iconClasses} />,
+      },
+      {
         label: 'Chat AI',
         path: '/home/scout/chat',
         Icon: <MessageSquare className={iconClasses} />,

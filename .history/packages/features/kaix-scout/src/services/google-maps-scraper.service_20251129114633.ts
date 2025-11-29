@@ -133,30 +133,24 @@ export async function searchPlaces(
         address: business.address || '',
         rating: parsedRating,
         reviews_count: parsedReviewsCount,
-        categories: Array.isArray(business.categories) ? business.categories : (business.category ? [business.category] : []),
-        website: business.website || undefined,
-        phone: business.phone || undefined,
-        link: business.link || `https://maps.google.com/?q=${encodeURIComponent(business.name || '')}`,
-        opening_hours: business.opening_hours || business.openingHours || undefined,
-        plus_code: business.plus_code || undefined,
-        about: business.about || undefined,
-        price_level: business.price_level || undefined,
-        images: business.images || undefined,
-        accessibility: business.accessibility || undefined,
-        amenities: business.amenities || undefined,
-        service_options: business.service_options || undefined,
-        popular_times: business.popular_times || undefined,
-        top_reviews: business.top_reviews || undefined,
-        menu_url: business.menu_url || undefined,
-      };
-    });
+      categories: Array.isArray(business.categories) ? business.categories : (business.category ? [business.category] : []),
+      website: business.website || undefined,
+      phone: business.phone || undefined,
+      link: business.link || `https://maps.google.com/?q=${encodeURIComponent(business.name || '')}`,
+      opening_hours: business.opening_hours || business.openingHours || undefined,
+      plus_code: business.plus_code || undefined,
+      about: business.about || undefined,
+      price_level: business.price_level || undefined,
+      images: business.images || undefined,
+      accessibility: business.accessibility || undefined,
+      amenities: business.amenities || undefined,
+      service_options: business.service_options || undefined,
+      popular_times: business.popular_times || undefined,
+      top_reviews: business.top_reviews || undefined,
+      menu_url: business.menu_url || undefined,
+    }));
 
     console.log(`[GoogleMapsScraperService] Successfully scraped ${places.length} places`);
-    
-    // Log final com estatísticas
-    const placesWithRating = places.filter(p => p.rating && p.rating > 0).length;
-    const placesWithCNPJ = places.filter(p => p.cnpj).length;
-    console.log(`[GoogleMapsScraperService] Stats: ${placesWithRating}/${places.length} com rating, ${placesWithCNPJ}/${places.length} com CNPJ`);
 
     return {
       places: places.slice(0, params.maxPlaces), // Limit to requested amount

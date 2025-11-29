@@ -248,7 +248,7 @@ const Sidebar: React.FC<
       {/* This is what handles the sidebar gap on desktop */}
       <div
         className={cn(
-          'relative w-(--sidebar-width) bg-transparent transition-[width] duration-200 ease-out will-change-[width]',
+          'relative w-(--sidebar-width) bg-transparent transition-[width] duration-300 ease-in-out',
           'group-data-[collapsible=offcanvas]:w-0',
           'group-data-[side=right]:rotate-180',
           variant === 'floating' || variant === 'inset'
@@ -261,7 +261,7 @@ const Sidebar: React.FC<
       />
       <div
         className={cn(
-          'fixed inset-y-0 z-10 hidden h-svh w-(--sidebar-width) transition-[left,right,width] duration-200 ease-out will-change-[width,transform] md:flex',
+          'fixed inset-y-0 z-10 hidden h-svh w-(--sidebar-width) transition-[left,right,width] duration-300 ease-in-out md:flex',
           side === 'left'
             ? 'left-0 group-data-[collapsible=offcanvas]:left-[calc(var(--sidebar-width)*-1)]'
             : 'right-0 group-data-[collapsible=offcanvas]:right-[calc(var(--sidebar-width)*-1)]',
@@ -435,7 +435,7 @@ const SidebarContent: React.FC<React.ComponentProps<'div'>> = ({
     <div
       data-sidebar="content"
       className={cn(
-        'flex min-h-0 flex-1 flex-col gap-2 overflow-auto group-data-[collapsible=icon]:overflow-hidden transition-all duration-200 ease-out',
+        'flex min-h-0 flex-1 flex-col gap-2 overflow-auto group-data-[collapsible=icon]:overflow-hidden',
         className,
       )}
       {...props}
@@ -467,7 +467,7 @@ const SidebarGroupLabel: React.FC<
     <Comp
       data-sidebar="group-label"
       className={cn(
-        'text-muted-foreground ring-sidebar-ring flex h-8 shrink-0 items-center rounded-md px-2 text-xs font-medium outline-hidden transition-[margin,opacity] duration-200 ease-out will-change-[margin,opacity] focus-visible:ring-2 [&>svg]:size-4 [&>svg]:shrink-0',
+        'text-muted-foreground ring-sidebar-ring flex h-8 shrink-0 items-center rounded-md px-2 text-xs font-medium outline-hidden transition-[margin,opacity] duration-300 ease-in-out focus-visible:ring-2 [&>svg]:size-4 [&>svg]:shrink-0',
         'group-data-[collapsible=icon]:-mt-2 group-data-[collapsible=icon]:opacity-0',
         className,
       )}
@@ -517,7 +517,7 @@ const SidebarMenu: React.FC<React.ComponentProps<'ul'>> = ({
   <ul
     data-sidebar="menu"
     className={cn(
-      'flex w-full min-w-0 flex-col gap-1 mt-4 group-data-[minimized=true]:items-center',
+      'flex w-full min-w-0 flex-col gap-1 group-data-[minimized=true]:items-center',
       className,
     )}
     {...props}
@@ -541,7 +541,7 @@ const SidebarMenuItem: React.FC<React.ComponentProps<'li'>> = ({
 SidebarMenuItem.displayName = 'SidebarMenuItem';
 
 const sidebarMenuButtonVariants = cva(
-  'peer/menu-button ring-sidebar-ring hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus:ring-primary active:bg-sidebar-accent active:text-sidebar-accent-foreground data-[active=true]:bg-sidebar-accent data-[active=true]:text-sidebar-accent-foreground data-[state=open]:hover:bg-sidebar-accent data-[state=open]:hover:text-sidebar-accent-foreground flex w-full items-center gap-2 overflow-hidden rounded-md p-2 text-left text-sm outline-hidden transition-[width,height,padding,opacity] duration-200 ease-out will-change-[width,height,padding] group-has-data-[sidebar=menu-action]/menu-item:pr-8 group-data-[collapsible=icon]:!size-8 group-data-[collapsible=icon]:!p-0 group-data-[collapsible=icon]:!pl-2 group-data-[collapsible=icon]:!justify-center group-data-[collapsible=icon]:!items-center group-data-[collapsible=icon]:!flex focus-visible:ring-2 disabled:pointer-events-none disabled:opacity-50 aria-disabled:pointer-events-none aria-disabled:opacity-50 data-[active=true]:font-medium [&>span:last-child]:truncate [&>svg]:size-4 [&>svg]:shrink-0 [&>svg]:ml-2 [&>span:last-child]:transition-opacity [&>span:last-child]:duration-200',
+  'peer/menu-button ring-sidebar-ring hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus:ring-primary active:bg-sidebar-accent active:text-sidebar-accent-foreground data-[active=true]:bg-sidebar-accent data-[active=true]:text-sidebar-accent-foreground data-[state=open]:hover:bg-sidebar-accent data-[state=open]:hover:text-sidebar-accent-foreground flex w-full items-center gap-2 overflow-hidden rounded-md p-2 text-left text-sm outline-hidden transition-[width,height,padding] duration-300 ease-in-out group-has-data-[sidebar=menu-action]/menu-item:pr-8 group-data-[collapsible=icon]:size-8! group-data-[collapsible=icon]:p-2! group-data-[collapsible=icon]:justify-center! focus-visible:ring-2 disabled:pointer-events-none disabled:opacity-50 aria-disabled:pointer-events-none aria-disabled:opacity-50 data-[active=true]:font-medium [&>span:last-child]:truncate [&>svg]:size-4 [&>svg]:shrink-0',
   {
     variants: {
       variant: {
@@ -921,7 +921,7 @@ export function SidebarNavigation({
                                 </div>
                                 <span
                                   className={cn(
-                                    'w-auto transition-opacity duration-200 ease-out',
+                                    'w-auto transition-opacity duration-300',
                                     {
                                       'w-0 opacity-0': !open,
                                     },
@@ -968,7 +968,7 @@ export function SidebarNavigation({
                                         const iconClassName = 'flex-shrink-0';
 
                                         const spanClassName = cn(
-                                          'w-auto transition-opacity duration-200 ease-out',
+                                          'w-auto transition-opacity duration-300',
                                           {
                                             'w-0 opacity-0': !open,
                                           },

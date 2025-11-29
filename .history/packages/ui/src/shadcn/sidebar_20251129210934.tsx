@@ -921,7 +921,7 @@ export function SidebarNavigation({
                                 </div>
                                 <span
                                   className={cn(
-                                    'w-auto transition-opacity duration-200 ease-out',
+                                    'w-auto transition-opacity duration-300',
                                     {
                                       'w-0 opacity-0': !open,
                                     },
@@ -968,7 +968,7 @@ export function SidebarNavigation({
                                         const iconClassName = 'flex-shrink-0';
 
                                         const spanClassName = cn(
-                                          'w-auto transition-opacity duration-200 ease-out',
+                                          'w-auto transition-opacity duration-300',
                                           {
                                             'w-0 opacity-0': !open,
                                           },

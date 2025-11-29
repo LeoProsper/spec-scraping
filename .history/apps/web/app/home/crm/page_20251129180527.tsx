@@ -1,0 +1,63 @@
+import { Suspense } from 'react';
+import { PageBody, PageHeader } from '@kit/ui/page';
+import { MasterCrmTable } from './_components/master-crm-table';
+import { MasterCrmFilters } from './_components/master-crm-filters';
+import { MasterCrmStats } from './_components/master-crm-stats';
+import { MasterCrmShortcuts } from './_components/master-crm-shortcuts';
+import { CrmConversionKpis } from './_components/crm-conversion-kpis';
+import { CrmBehavioralAlerts } from './_components/crm-behavioral-alerts';
+import { OnboardingFirstLead } from './_components/onboarding-first-lead';
+import { CrmExportButton } from './_components/crm-export-button';
+import { Skeleton } from '@kit/ui/skeleton';
+
+export default function CrmPage() {
+  return (
+    <>
+      <PageHeader 
+        title="CRM Master"
+        description="Central unificada de todas as suas empresas e prospecções"
+      >
+        {/* FASE P4: Botão de Exportação */}
+        <CrmExportButton />
+      </PageHeader>
+
+      <PageBody>
+        {/* FASE 7: Alertas Comportamentais (automático ao entrar) */}
+        <CrmBehavioralAlerts />
+
+        {/* FASE P2: Onboarding Primeiro Lead */}
+        <OnboardingFirstLead hasCompanies={false} />
+
+        <div className="flex flex-col gap-6">
+          {/* FASE 6: Indicadores de Dinheiro */}
+          <Suspense fallback={<Skeleton className="h-24 w-full" />}>
+            <CrmConversionKpis />
+          </Suspense>
+
+          {/* Estatísticas de Pressão Operacional */}
+          <Suspense fallback={<Skeleton className="h-24 w-full" />}>
+            <MasterCrmStats />
+          </Suspense>
+
+          {/* Atalhos comerciais prontos */}
+          <MasterCrmShortcuts />
+
+          {/* Filtros e tabela */}
+          <div className="flex gap-6">
+            {/* Painel de filtros lateral */}
+            <aside className="w-80 flex-shrink-0">
+              <MasterCrmFilters />
+            </aside>
+
+            {/* Tabela principal */}
+            <main className="flex-1 overflow-x-auto">
+              <Suspense fallback={<Skeleton className="h-96 w-full" />}>
+                <MasterCrmTable />
+              </Suspense>
+            </main>
+          </div>
+        </div>
+      </PageBody>
+    </>
+  );
+}

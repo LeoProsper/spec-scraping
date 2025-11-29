@@ -378,13 +378,13 @@ export async function runAI(params: RunAIParams): Promise<RunAIResult> {
       try {
         // Call OpenAI API
         const response = await openai.chat.completions.create({
-          model: modelDefault,
+          model: config.openaiModelDefault,
           messages: [
             { role: 'system', content: systemPrompt },
             { role: 'user', content: userMessage },
           ],
-          max_tokens: params.maxTokens || maxTokensDefault,
-          temperature: params.temperature ?? temperature,
+          max_tokens: params.maxTokens || config.openaiMaxTokens,
+          temperature: params.temperature ?? 0.7,
         }, {
           signal: controller.signal,
         });
@@ -393,32 +393,14 @@ export async function runAI(params: RunAIParams): Promise<RunAIResult> {
 
         const text = response.choices[0]?.message?.content?.trim() || '';
         const duration = Date.now() - startTime;
-        
-        const inputTokens = response.usage?.prompt_tokens || 0;
-        const outputTokens = response.usage?.completion_tokens || 0;
-        const cost = calculateCost(modelDefault, inputTokens, outputTokens);
 
-        // Log success to database
-        await logUsage({
-          userId: params.userId,
-          mode: params.mode,
-          model: modelDefault,
-          inputTokens,
-          outputTokens,
-          cost,
-          duration,
-          success: true,
-          metadata: params.metadata,
-        });
-
-        // Log success to console
+        // Log success
         console.log('[AI] Success:', {
           mode: params.mode,
           userId: params.userId,
           duration: `${duration}ms`,
           attempt,
           tokens: response.usage?.total_tokens,
-          cost: `$${cost.toFixed(6)}`,
           metadata: params.metadata,
         });
 
@@ -432,77 +414,29 @@ export async function runAI(params: RunAIParams): Promise<RunAIResult> {
 
         // Handle timeout
         if (error.name === 'AbortError') {
-          const aiError = new AIError(
-            `AI request timed out after ${timeoutMs}ms`,
+          throw new AIError(
+            `AI request timed out after ${config.openaiTimeoutMs}ms`,
             AIErrorCode.TIMEOUT,
             error
           );
-          
-          await logUsage({
-            userId: params.userId,
-            mode: params.mode,
-            model: modelDefault,
-            inputTokens: 0,
-            outputTokens: 0,
-            cost: 0,
-            duration: Date.now() - startTime,
-            success: false,
-            errorCode: aiError.code,
-            errorMessage: aiError.message,
-            metadata: params.metadata,
-          });
-          
-          throw aiError;
         }
 
         // Handle rate limit (429)
         if (error.status === 429) {
-          const aiError = new AIError(
+          throw new AIError(
             'OpenAI rate limit exceeded. Please try again later.',
             AIErrorCode.RATE_LIMIT,
             error
           );
-          
-          await logUsage({
-            userId: params.userId,
-            mode: params.mode,
-            model: modelDefault,
-            inputTokens: 0,
-            outputTokens: 0,
-            cost: 0,
-            duration: Date.now() - startTime,
-            success: false,
-            errorCode: aiError.code,
-            errorMessage: aiError.message,
-            metadata: params.metadata,
-          });
-          
-          throw aiError;
         }
 
         // Handle invalid API key (401)
         if (error.status === 401) {
-          const aiError = new AIError(
-            'Invalid OpenAI API key. Please check your configuration in Admin Panel.',
+          throw new AIError(
+            'Invalid OpenAI API key. Please check your configuration.',
             AIErrorCode.INVALID_API_KEY,
             error
           );
-          
-          await logUsage({
-            userId: params.userId,
-            mode: params.mode,
-            model: modelDefault,
-            inputTokens: 0,
-            outputTokens: 0,
-            cost: 0,
-            duration: Date.now() - startTime,
-            success: false,
-            errorCode: aiError.code,
-            errorMessage: aiError.message,
-            metadata: params.metadata,
-          });
-          
-          throw aiError;
         }
 
         // Re-throw for retry
@@ -534,29 +468,13 @@ export async function runAI(params: RunAIParams): Promise<RunAIResult> {
         duration: `${duration}ms`,
       });
 
-      // If last attempt, throw error and log
+      // If last attempt, throw error
       if (attempt === maxRetries) {
-        const aiError = new AIError(
+        throw new AIError(
           `AI request failed after ${maxRetries} attempts: ${error.message}`,
           AIErrorCode.INTERNAL_ERROR,
           error
         );
-        
-        await logUsage({
-          userId: params.userId,
-          mode: params.mode,
-          model: modelDefault,
-          inputTokens: 0,
-          outputTokens: 0,
-          cost: 0,
-          duration: Date.now() - startTime,
-          success: false,
-          errorCode: aiError.code,
-          errorMessage: aiError.message,
-          metadata: params.metadata,
-        });
-        
-        throw aiError;
       }
 
       // Exponential backoff: 1s, 2s, 4s
@@ -566,26 +484,10 @@ export async function runAI(params: RunAIParams): Promise<RunAIResult> {
   }
 
   // Should never reach here
-  const aiError = new AIError(
+  throw new AIError(
     'AI request failed unexpectedly',
     AIErrorCode.INTERNAL_ERROR
   );
-  
-  await logUsage({
-    userId: params.userId,
-    mode: params.mode,
-    model: modelDefault,
-    inputTokens: 0,
-    outputTokens: 0,
-    cost: 0,
-    duration: Date.now() - startTime,
-    success: false,
-    errorCode: aiError.code,
-    errorMessage: aiError.message,
-    metadata: params.metadata,
-  });
-  
-  throw aiError;
 }
 
 /**

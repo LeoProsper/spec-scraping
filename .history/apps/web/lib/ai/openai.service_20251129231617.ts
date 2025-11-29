@@ -534,29 +534,13 @@ export async function runAI(params: RunAIParams): Promise<RunAIResult> {
         duration: `${duration}ms`,
       });
 
-      // If last attempt, throw error and log
+      // If last attempt, throw error
       if (attempt === maxRetries) {
-        const aiError = new AIError(
+        throw new AIError(
           `AI request failed after ${maxRetries} attempts: ${error.message}`,
           AIErrorCode.INTERNAL_ERROR,
           error
         );
-        
-        await logUsage({
-          userId: params.userId,
-          mode: params.mode,
-          model: modelDefault,
-          inputTokens: 0,
-          outputTokens: 0,
-          cost: 0,
-          duration: Date.now() - startTime,
-          success: false,
-          errorCode: aiError.code,
-          errorMessage: aiError.message,
-          metadata: params.metadata,
-        });
-        
-        throw aiError;
       }
 
       // Exponential backoff: 1s, 2s, 4s
@@ -566,26 +550,10 @@ export async function runAI(params: RunAIParams): Promise<RunAIResult> {
   }
 
   // Should never reach here
-  const aiError = new AIError(
+  throw new AIError(
     'AI request failed unexpectedly',
     AIErrorCode.INTERNAL_ERROR
   );
-  
-  await logUsage({
-    userId: params.userId,
-    mode: params.mode,
-    model: modelDefault,
-    inputTokens: 0,
-    outputTokens: 0,
-    cost: 0,
-    duration: Date.now() - startTime,
-    success: false,
-    errorCode: aiError.code,
-    errorMessage: aiError.message,
-    metadata: params.metadata,
-  });
-  
-  throw aiError;
 }
 
 /**

@@ -194,7 +194,6 @@ async function retryWithBackoff(fn, maxRetries = 3) {
 | `list_templates` | Templates de listas | ? | ✅ OK | 🟢 Baixo (estático) |
 | `proposals` | Propostas comerciais | 0 | ⚠️ Estrutura pronta | 🟢 Baixo |
 | `payments` | Pagamentos/vendas | 0 | ⚠️ Estrutura pronta | 🟢 Baixo |
-| `ai_usage_logs` | Logs de uso de IA | 0+ | ✅ Em uso | 🟡 Médio (10k/mês) |
 
 #### ⚠️ **ESTRUTURAIS (Preparadas mas não usadas — 3 tabelas)**
 

@@ -401,36 +401,16 @@ export default function OpportunitiesPage() {
                         )}
                       </div>
 
-                      {/* Botões de Gerar */}
-                      <div className="flex gap-3">
-                        <Button 
-                          onClick={handleGenerate} 
-                          disabled={loading || loadingAI}
-                          className="flex-1"
-                          size="lg"
-                          variant="outline"
-                        >
-                          <RefreshCw className={`h-4 w-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
-                          {loading ? 'Buscando...' : 'Buscar Oportunidade'}
-                        </Button>
-
-                        <Button 
-                          onClick={handleGenerateWithAI} 
-                          disabled={loading || loadingAI}
-                          className="flex-1"
-                          size="lg"
-                        >
-                          <Sparkles className={`h-4 w-4 mr-2 ${loadingAI ? 'animate-pulse' : ''}`} />
-                          {loadingAI ? 'Gerando com IA...' : 'Gerar com IA'}
-                        </Button>
-                      </div>
-
-                      {/* Nota sobre IA */}
-                      {selectedCategory === 'all' && (
-                        <p className="text-xs text-muted-foreground text-center">
-                          💡 Selecione um nicho específico para usar o gerador com IA
-                        </p>
-                      )}
+                      {/* Botão Gerar */}
+                      <Button 
+                        onClick={handleGenerate} 
+                        disabled={loading}
+                        className="w-full"
+                        size="lg"
+                      >
+                        <RefreshCw className={`h-4 w-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
+                        {loading ? 'Buscando...' : 'Buscar Oportunidade'}
+                      </Button>
 
                       {/* Botões Clicáveis Adicionais */}
                       <div className="flex items-center justify-center gap-6 pt-4">

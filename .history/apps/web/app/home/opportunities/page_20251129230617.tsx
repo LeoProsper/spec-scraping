@@ -183,96 +183,6 @@ export default function OpportunitiesPage() {
     }
   }
 
-  // Gerar prompt com IA
-  async function handleGenerateWithAI() {
-    if (!selectedCategory || selectedCategory === 'all') {
-      toast.error('Selecione um nicho específico para gerar com IA');
-      return;
-    }
-
-    setLoadingAI(true);
-
-    try {
-      // Encontrar categoria selecionada
-      const category = categories.find(c => c.id === selectedCategory);
-      const categoryName = category?.name || 'empresas';
-      const categoryDesc = category?.description || '';
-
-      // Chamar API de IA
-      const res = await fetch('/api/ai/run', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          mode: 'B2B_GENERATOR',
-          user: `Gerar oportunidade de prospecção B2B para empresas do nicho: ${categoryName}. ${categoryDesc}`,
-          context: `Categoria: ${categoryName}`,
-          metadata: {
-            source: 'b2b_generator',
-            category: categoryName,
-            category_id: selectedCategory
-          }
-        })
-      });
-
-      const data = await res.json();
-
-      if (data.success) {
-        // Criar objeto de prompt compatível
-        const aiPrompt: Prompt = {
-          id: `ai-${Date.now()}`,
-          category_id: selectedCategory,
-          category_name: categoryName,
-          prompt_text: data.result,
-          pain_point: 'Gerado com IA',
-          data_sources: ['OpenAI GPT-4']
-        };
-
-        setCurrentPrompt(aiPrompt);
-        toast.success('Prompt gerado com IA com sucesso!');
-
-        // Salvar no histórico
-        const saveRes = await fetch('/api/opportunities/history', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            prompt_text: data.result,
-            category_name: categoryName,
-            category_icon: category?.icon || '🎯',
-            results_count: 0
-          })
-        });
-
-        if (saveRes.ok) {
-          // Recarregar histórico
-          const historyRes = await fetch('/api/opportunities/history?limit=20');
-          const historyData = await historyRes.json();
-          if (historyData.success) {
-            setHistory(historyData.history || []);
-          }
-        }
-
-      } else {
-        toast.error(data.error || 'Erro ao gerar prompt com IA');
-        
-        // Mostrar rate limit info se disponível
-        if (data.rateLimitStatus) {
-          const { remaining, resetAt } = data.rateLimitStatus;
-          const resetTime = new Date(resetAt).toLocaleTimeString('pt-BR');
-          toast.info(`Requisições restantes: ${remaining}. Reset às ${resetTime}`);
-        }
-      }
-    } catch (error) {
-      console.error('❌ Erro ao gerar com IA:', error);
-      toast.error('Erro ao conectar com o serviço de IA');
-    } finally {
-      setLoadingAI(false);
-    }
-  }
-
   const displayedHistory = showAllHistory ? history : history.slice(0, 9);
 
   return (
@@ -401,36 +311,16 @@ export default function OpportunitiesPage() {
                         )}
                       </div>
 
-                      {/* Botões de Gerar */}
-                      <div className="flex gap-3">
-                        <Button 
-                          onClick={handleGenerate} 
-                          disabled={loading || loadingAI}
-                          className="flex-1"
-                          size="lg"
-                          variant="outline"
-                        >
-                          <RefreshCw className={`h-4 w-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
-                          {loading ? 'Buscando...' : 'Buscar Oportunidade'}
-                        </Button>
-
-                        <Button 
-                          onClick={handleGenerateWithAI} 
-                          disabled={loading || loadingAI}
-                          className="flex-1"
-                          size="lg"
-                        >
-                          <Sparkles className={`h-4 w-4 mr-2 ${loadingAI ? 'animate-pulse' : ''}`} />
-                          {loadingAI ? 'Gerando com IA...' : 'Gerar com IA'}
-                        </Button>
-                      </div>
-
-                      {/* Nota sobre IA */}
-                      {selectedCategory === 'all' && (
-                        <p className="text-xs text-muted-foreground text-center">
-                          💡 Selecione um nicho específico para usar o gerador com IA
-                        </p>
-                      )}
+                      {/* Botão Gerar */}
+                      <Button 
+                        onClick={handleGenerate} 
+                        disabled={loading}
+                        className="w-full"
+                        size="lg"
+                      >
+                        <RefreshCw className={`h-4 w-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
+                        {loading ? 'Buscando...' : 'Buscar Oportunidade'}
+                      </Button>
 
                       {/* Botões Clicáveis Adicionais */}
                       <div className="flex items-center justify-center gap-6 pt-4">
